@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <button>Search</button>
+        <input type="text" class="input" />
+      </header>
+      <main>
+        <div class="info"></div>
+      </main>
+    </div>
+
+    <script>
+      //DOM references
+      const button = document.querySelector("button");
+      const div = document.querySelector("text");
+      const input = document.querySelector(".input");
+      const images = document.querySelector(".images");
+      const info = document.querySelector(".info");
+
+      //searches for character homeworld data, returns data in variable
+      async function getCharacterHomeWorld(homeworldAPIAddress) {
+        const response = await fetch(`${homeworldAPIAddress}`);
+        const result = await response.json().then((data) => {
+          let planetName = data.result.properties.name;
+          console.log(planetName); // logs planet name
+          return planetName;
+        });
+      }
+
+      //creates HTML elements for search results, calls getCharacterHomeworld()
+      const renderData = (outputData) => {
+        console.log(outputData);
+        outputData.map((character) => {
+          let characterInfo = `<div>
+            <div class="name">${character.properties.name}</div>
+            <div class="homeworld">${getCharacterHomeWorld(
+              character.properties.homeworld
+            )}</div>
+          </div>`;
+          info.innerHTML += characterInfo;
+        });
+      };
+
+      //searches for characters using input string, calls renderData()
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        let searchString = document.querySelector(".input").value;
+        let urlEncodedSearchString = encodeURIComponent(searchString);
+        getCharacterInfo();
+        async function getCharacterInfo() {
+          const response = await fetch(
+            `https://www.swapi.tech/api/people/?name=${urlEncodedSearchString}`
+          );
+          const result = await response.json().then((data) => {
+            let outputData = data.result;
+            renderData(outputData);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

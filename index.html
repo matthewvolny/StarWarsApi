@@ -18,34 +18,37 @@
     </div>
 
     <script>
+      // Whole-script strict mode syntax
+      "use strict";
+      var v = "Hi! I'm a strict mode script!";
       //DOM references
       const button = document.querySelector("button");
       const div = document.querySelector("text");
       const input = document.querySelector(".input");
       const images = document.querySelector(".images");
       const info = document.querySelector(".info");
-      /*
-            //searches for character homeworld data, returns data in variable
-            async function getCharacterHomeWorld(homeworldAPIAddress) {
-              const response = await fetch(`${homeworldAPIAddress}`);
-              const result = await response.json().then((data) => {
-                let planetName = data.result.properties.name;
-                console.log(planetName); // logs planet name
-                return planetName;
-              });
-            }
-      */
+
+      let charactersArray = [];
+      let planetsArray = [];
+      //searches for character homeworld data, returns data in variable
+      async function getCharacterHomeWorld(x) {
+        const planetResponse = await fetch(`${x}`);
+        const planetRawData = await planetResponse.json();
+        let planetName = planetRawData.result.properties.name;
+        planetsArray.push(planetName);
+      }
+
       //creates HTML elements for search results, calls getCharacterHomeworld()
-      const renderData = (characterData) => {
-        console.log(characterData);
-        //console.log(planetName);
-        characterData.forEach((character) => {
-          let characterInfo = `<div>
-                  <div class="name">${character.properties.name}</div>
-                  <div class="homeworld">here!!!!</div>
-                </div>`;
-          info.innerHTML += characterInfo;
-        });
+      const renderData = (charactersArray, planetsArray) => {
+        console.log(planetsArray);
+        console.log(charactersArray);
+        for (let i = 0; i < charactersArray.length; i++) {
+          for (let j = 0; j < planetsArray.length; j++) {
+            console.log(charactersArray[i]);
+            console.log(planetsArray[j]);
+            info.innerHTML += `<div>${charactersArray[i]} from ${planetsArray[j]}</div>`;
+          }
+        }
       };
 
       //searches for characters using input string, calls renderData()
@@ -58,19 +61,14 @@
             `https://www.swapi.tech/api/people/?name=${urlEncodedSearchString}`
           );
           const rawCharacterData = await characterResponse.json();
-          console.log(rawCharacterData.result);
           const characterData = rawCharacterData.result;
-          //////////////////
-          // const planetResponse = await fetch(
-          //   `${characterData.result.properties.homeworld}` //?
-          // );
-          // const planetResult = await planetResponse.json();
-          // const rawPlanetData = data.result.properties.name; //?
-          // console.log(rawPlanetData); // ?
-
-          renderData(characterData);
+          characterData.forEach((character) => {
+            charactersArray.push(character.properties.name);
+            getCharacterHomeWorld(character.properties.homeworld);
+          });
         }
         getCharacterInfo();
+        renderData(charactersArray, planetsArray);
       });
     </script>
   </body>

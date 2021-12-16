@@ -18,9 +18,9 @@
     </div>
 
     <script>
-      // Whole-script strict mode syntax
-      "use strict";
-      var v = "Hi! I'm a strict mode script!";
+      // // Whole-script strict mode syntax
+      // "use strict";
+      // var v = "Hi! I'm a strict mode script!";
       //DOM references
       const button = document.querySelector("button");
       const div = document.querySelector("text");
@@ -30,24 +30,16 @@
 
       let charactersArray = [];
       let planetsArray = [];
-      //searches for character homeworld data, returns data in variable
-      async function getCharacterHomeWorld(x) {
-        const planetResponse = await fetch(`${x}`);
-        const planetRawData = await planetResponse.json();
-        let planetName = planetRawData.result.properties.name;
-        planetsArray.push(planetName);
-      }
 
       //creates HTML elements for search results, calls getCharacterHomeworld()
       const renderData = (charactersArray, planetsArray) => {
         console.log(planetsArray);
         console.log(charactersArray);
-        for (let i = 0; i < charactersArray.length; i++) {
-          for (let j = 0; j < planetsArray.length; j++) {
-            console.log(charactersArray[i]);
-            console.log(planetsArray[j]);
-            info.innerHTML += `<div>${charactersArray[i]} from ${planetsArray[j]}</div>`;
-          }
+        info.innerHTML = "<div></div>";
+        for (i = 0; i < charactersArray.length; i++) {
+          console.log(charactersArray[i]);
+          console.log(planetsArray[i]);
+          info.innerHTML += `<div>${charactersArray[i]} from ${planetsArray[i]}</div>`;
         }
       };
 
@@ -57,18 +49,31 @@
         let searchString = document.querySelector(".input").value;
         let urlEncodedSearchString = encodeURIComponent(searchString);
         async function getCharacterInfo() {
+          /////would like to move this nested async function out, but could not find a way
+          //searches for character homeworld data, returns data in variable
+          async function getCharacterHomeWorld(x) {
+            const planetResponse = await fetch(`${x}`);
+            const planetRawData = await planetResponse.json();
+            let planetName = planetRawData.result.properties.name;
+            planetsArray = [];
+            await planetsArray.push(planetName);
+            if (charactersArray.length === planetsArray.length) {
+              renderData(charactersArray, planetsArray);
+            }
+          }
+          ///////////////
           const characterResponse = await fetch(
             `https://www.swapi.tech/api/people/?name=${urlEncodedSearchString}`
           );
           const rawCharacterData = await characterResponse.json();
           const characterData = rawCharacterData.result;
+          charactersArray = [];
           characterData.forEach((character) => {
             charactersArray.push(character.properties.name);
             getCharacterHomeWorld(character.properties.homeworld);
           });
         }
         getCharacterInfo();
-        renderData(charactersArray, planetsArray);
       });
     </script>
   </body>

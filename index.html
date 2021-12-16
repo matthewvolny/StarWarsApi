@@ -24,46 +24,53 @@
       const input = document.querySelector(".input");
       const images = document.querySelector(".images");
       const info = document.querySelector(".info");
-
-      //searches for character homeworld data, returns data in variable
-      async function getCharacterHomeWorld(homeworldAPIAddress) {
-        const response = await fetch(`${homeworldAPIAddress}`);
-        const result = await response.json().then((data) => {
-          let planetName = data.result.properties.name;
-          console.log(planetName); // logs planet name
-          return planetName;
-        });
-      }
-
+      /*
+            //searches for character homeworld data, returns data in variable
+            async function getCharacterHomeWorld(homeworldAPIAddress) {
+              const response = await fetch(`${homeworldAPIAddress}`);
+              const result = await response.json().then((data) => {
+                let planetName = data.result.properties.name;
+                console.log(planetName); // logs planet name
+                return planetName;
+              });
+            }
+      */
       //creates HTML elements for search results, calls getCharacterHomeworld()
-      const renderData = (outputData) => {
-        console.log(outputData);
-        outputData.map((character) => {
+      const renderData = (characterData) => {
+        console.log(characterData);
+        //console.log(planetName);
+        characterData.forEach((character) => {
           let characterInfo = `<div>
-            <div class="name">${character.properties.name}</div>
-            <div class="homeworld">${getCharacterHomeWorld(
-              character.properties.homeworld
-            )}</div>
-          </div>`;
+                  <div class="name">${character.properties.name}</div>
+                  <div class="homeworld">here!!!!</div>
+                </div>`;
           info.innerHTML += characterInfo;
         });
       };
 
       //searches for characters using input string, calls renderData()
-      button.addEventListener("click", (event) => {
-        event.preventDefault();
+      button.addEventListener("click", (e) => {
+        e.preventDefault();
         let searchString = document.querySelector(".input").value;
         let urlEncodedSearchString = encodeURIComponent(searchString);
-        getCharacterInfo();
         async function getCharacterInfo() {
-          const response = await fetch(
+          const characterResponse = await fetch(
             `https://www.swapi.tech/api/people/?name=${urlEncodedSearchString}`
           );
-          const result = await response.json().then((data) => {
-            let outputData = data.result;
-            renderData(outputData);
-          });
+          const rawCharacterData = await characterResponse.json();
+          console.log(rawCharacterData.result);
+          const characterData = rawCharacterData.result;
+          //////////////////
+          // const planetResponse = await fetch(
+          //   `${characterData.result.properties.homeworld}` //?
+          // );
+          // const planetResult = await planetResponse.json();
+          // const rawPlanetData = data.result.properties.name; //?
+          // console.log(rawPlanetData); // ?
+
+          renderData(characterData);
         }
+        getCharacterInfo();
       });
     </script>
   </body>
